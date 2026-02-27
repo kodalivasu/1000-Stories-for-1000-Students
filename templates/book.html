@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ book.title }} — Story Books</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="book-page">
+  <header class="header">
+    <h1 class="logo">Story Books</h1>
+    <a href="{{ url_for('upload_page') }}" class="header-upload">Upload your book</a>
+  </header>
+  <div class="book-viewer">
+  <header class="storybook-header">
+    <div class="storybook-header-left">
+      <span class="header-book-icon" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      </span>
+      <h1 class="storybook-title" id="storybookTitle">{{ book.title }}</h1>
+      <div class="header-undo-redo">
+        <button type="button" class="icon-btn" id="undoBtn" aria-label="Previous page" title="Previous page">↶</button>
+        <button type="button" class="icon-btn" id="redoBtn" aria-label="Next page" title="Next page">↷</button>
+      </div>
+      <nav class="header-page-nav" aria-label="Page navigation">
+        <button type="button" class="icon-btn" id="headerPrevBtn" aria-label="Previous page">‹</button>
+        <span class="header-page-indicator" id="headerPageIndicator">1 / {{ pages|length }}</span>
+        <button type="button" class="icon-btn" id="headerNextBtn" aria-label="Next page">›</button>
+      </nav>
+    </div>
+    <div class="storybook-header-right">
+      <div class="header-dropdown-wrap">
+        <button type="button" class="icon-btn" id="shareTrigger" aria-label="Share" aria-expanded="false" aria-haspopup="true" title="Share">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.59 13.51 6.83 3.98"/><path d="M15.41 6.51l-6.82 3.98"/></svg>
+        </button>
+        <div class="header-dropdown" id="shareDropdown" hidden>
+          <a href="#" id="shareWhatsApp" target="_blank" rel="noopener">WhatsApp</a>
+          <a href="#" id="shareEmail" target="_blank" rel="noopener">Email</a>
+          <button type="button" id="shareCopyLink">Copy link</button>
+        </div>
+      </div>
+      <button type="button" class="icon-btn" id="printBtn" aria-label="Print" title="Print">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/></svg>
+      </button>
+      <div class="header-dropdown-wrap">
+        <button type="button" class="listen-btn" id="listenTrigger" aria-label="Listen" aria-expanded="false" aria-haspopup="true" title="Listen">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+          <span>Listen</span>
+          <span class="listen-chevron" aria-hidden="true">▾</span>
+        </button>
+        <div class="header-dropdown" id="listenDropdown" hidden>
+          <button type="button" id="listenStart">Read aloud</button>
+          <button type="button" id="listenStop">Stop</button>
+        </div>
+      </div>
+      <button type="button" class="invite-btn" id="inviteBtn" title="Invite a friend">
+        <span class="invite-icon" aria-hidden="true">✨</span>
+        <span>Invite a friend</span>
+      </button>
+      <a href="{{ url_for('index') }}" class="icon-btn icon-btn-close" id="closeBtn" aria-label="Close" title="Close">×</a>
+    </div>
+  </header>
+  <main class="reader">
+    <div class="flip-container">
+      <div class="book-frame">
+        <div class="book-edge book-edge-left" aria-hidden="true"></div>
+        <div class="page-area" id="pageArea">
+          <button type="button" class="flip-btn prev" aria-label="Previous page" id="prevBtn">‹</button>
+          <img id="pageImage" src="" alt="Page" class="page-img">
+          <button type="button" class="flip-btn next" aria-label="Next page" id="nextBtn">›</button>
+        </div>
+        <div class="book-edge book-edge-right" aria-hidden="true"></div>
+      </div>
+    </div>
+    <div class="page-indicator" id="pageIndicator">1 / {{ pages|length }}</div>
+  </main>
+  </div>
+  <script>
+    const bookId = "{{ book.id }}";
+    const slug = "{{ book.slug }}";
+    const bookTitle = {{ book.title | tojson }};
+    const pages = {{ pages | tojson }};
+    const pageTexts = {{ page_texts | tojson }};
+    const baseUrl = "{{ base_url() }}";
+    const bookUrl = baseUrl + "{{ url_for('book_view', slug=book.slug) }}";
+  </script>
+  <script src="{{ url_for('static', filename='book.js') }}"></script>
+</body>
+</html>

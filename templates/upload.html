@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Upload your book — Story Books</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="header">
+    <a href="{{ url_for('index') }}" class="back">← Home</a>
+    <h1 class="logo">Upload your book</h1>
+  </header>
+  <main class="main">
+    <p class="upload-hint">Pages are used in the order you select them (page 1, 2, 3…). Use .png, .jpg, .jpeg, .webp, or .gif.</p>
+    <form id="upload-form" class="upload-form">
+      <label class="form-label" for="title">Book title</label>
+      <input type="text" id="title" name="title" class="form-input" required placeholder="My story">
+      <label class="form-label" for="category">Category</label>
+      <select id="category" name="category" class="form-input" required>
+        {% for cat in categories %}
+        <option value="{{ cat }}">{{ cat }}</option>
+        {% endfor %}
+      </select>
+      <label class="form-label" for="pages">Page images</label>
+      <input type="file" id="pages" name="pages" class="form-input" accept="image/png,image/jpeg,image/webp,image/gif" multiple required>
+      <p id="page-count" class="form-hint" aria-live="polite"></p>
+      <div id="form-error" class="form-error" role="alert" hidden></div>
+      <button type="submit" class="btn btn-primary" id="submit-btn">Upload book</button>
+    </form>
+  </main>
+  <script>
+    (function () {
+      var form = document.getElementById('upload-form');
+      var pagesInput = document.getElementById('pages');
+      var pageCount = document.getElementById('page-count');
+      var formError = document.getElementById('form-error');
+      var submitBtn = document.getElementById('submit-btn');
+
+      function showError(msg) {
+        formError.textContent = msg;
+        formError.hidden = false;
+      }
+      function clearError() {
+        formError.textContent = '';
+        formError.hidden = true;
+      }
+
+      pagesInput.addEventListener('change', function () {
+        var n = (this.files && this.files.length) || 0;
+        pageCount.textContent = n ? n + ' page(s) selected' : '';
+      });
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        clearError();
+        if (!pagesInput.files || pagesInput.files.length === 0) {
+          showError('Please select at least one page image.');
+          return;
+        }
+        submitBtn.disabled = true;
+
+        fetch('{{ url_for("api_create_book") }}', {
+          method: 'POST',
+          body: new FormData(form)
+        })
+          .then(function (r) { return r.json().then(function (data) { return { status: r.status, data: data }; }); })
+          .then(function (res) {
+            if (res.data.ok && res.data.slug) {
+              window.location.href = '{{ url_for("book_view", slug="") }}' + res.data.slug;
+              return;
+            }
+            showError(res.data.error || 'Upload failed.');
+            submitBtn.disabled = false;
+          })
+          .catch(function () {
+            showError('Something went wrong. Please try again.');
+            submitBtn.disabled = false;
+          });
+      });
+    })();
+  </script>
+</body>
+</html>

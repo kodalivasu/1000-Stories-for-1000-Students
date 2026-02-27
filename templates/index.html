@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Story Books</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="header">
+    <h1 class="logo">Story Books</h1>
+    <a href="{{ url_for('upload_page') }}" class="header-upload">Upload your book</a>
+  </header>
+  <main class="main">
+    {% if books %}
+    <section class="books">
+      <h2 class="section-title">Books</h2>
+      <ul class="book-list">
+        {% for b in books %}
+        <li class="book-card">
+          <a href="{{ url_for('book_view', slug=b.slug) }}" class="book-link">
+            <span class="book-cover">
+              {% if b.cover %}
+              <img src="{{ url_for('book_page_image', book_id=b.id, filename=b.cover) }}" alt="">
+              {% endif %}
+            </span>
+            <span class="book-title">{{ b.title }}</span>
+            <span class="book-meta">{{ b.category }} · {{ b.page_count }} pages</span>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% else %}
+    <p class="empty">No books yet. Import one with the script or add via app later.</p>
+    {% endif %}
+  </main>
+</body>
+</html>
