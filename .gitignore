@@ -13,9 +13,6 @@ env/
 dist/
 build/
 
-# Local data (books and uploads — use persistent disk or external storage in production)
-data/
-
 # IDE / OS
 .idea/
 .vscode/
